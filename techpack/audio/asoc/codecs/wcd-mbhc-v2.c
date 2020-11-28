@@ -607,6 +607,9 @@ void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 		hphlocp_off_report(mbhc, SND_JACK_OC_HPHL);
 		mbhc->current_plug = MBHC_PLUG_TYPE_NONE;
 		mbhc->force_linein = false;
+		#ifdef CONFIG_ODM_WT_EDIT
+		headset_notifier_call_chain(0,NULL);
+		#endif
 	} else {
 		/*
 		 * Report removal of current jack type.
@@ -744,6 +747,9 @@ void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 				    (mbhc->hph_status | SND_JACK_MECHANICAL),
 				    WCD_MBHC_JACK_MASK);
 		wcd_mbhc_clr_and_turnon_hph_padac(mbhc);
+		#ifdef CONFIG_ODM_WT_EDIT
+		headset_notifier_call_chain(1,NULL);
+		#endif
 	}
 	pr_debug("%s: leave hph_status %x\n", __func__, mbhc->hph_status);
 }

@@ -555,6 +555,12 @@ static void wcd_mbhc_adc_detect_plug_type(struct wcd_mbhc *mbhc)
 	struct snd_soc_codec *codec = mbhc->codec;
 
 	pr_debug("%s: enter\n", __func__);
+
+	#ifdef CONFIG_ODM_WT_EDIT
+	//Gong.Chen@ODM_WT.mm.audiodriver.Machine, 2019/07/10, Modify for headset
+	msleep(400);
+	#endif
+
 	WCD_MBHC_RSC_ASSERT_LOCKED(mbhc);
 
 	if (mbhc->mbhc_cb->hph_pull_down_ctrl)
@@ -579,8 +585,16 @@ static void wcd_mbhc_adc_detect_plug_type(struct wcd_mbhc *mbhc)
 static void wcd_micbias_disable(struct wcd_mbhc *mbhc)
 {
 	if (mbhc->micbias_enable) {
+		#ifndef CONFIG_PRODUCT_REALME_TRINKET
+		/* Zhaoan.Xu@Multimedia.AudioDriver.Stability, 2019/04/11, Modify for checklist 861440*/
 		mbhc->mbhc_cb->mbhc_micb_ctrl_thr_mic(
 			mbhc->codec, MIC_BIAS_2, false);
+		#else
+		if (mbhc->mbhc_cb->mbhc_micb_ctrl_thr_mic) {
+			mbhc->mbhc_cb->mbhc_micb_ctrl_thr_mic(
+			    mbhc->codec, MIC_BIAS_2, false);
+		}
+		#endif /* CONFIG_PRODUCT_REALME_TRINKET */
 		if (mbhc->mbhc_cb->set_micbias_value)
 			mbhc->mbhc_cb->set_micbias_value(
 					mbhc->codec);
@@ -615,10 +629,20 @@ static void wcd_correct_swch_plug(struct work_struct *work)
 	enum wcd_mbhc_plug_type plug_type = MBHC_PLUG_TYPE_INVALID;
 	unsigned long timeout;
 	bool wrk_complete = false;
+	#ifndef CONFIG_PRODUCT_REALME_TRINKET
+	/*xiang.fei@PSW.MM.AudioDriver.HeadsetDet, 2017/03/03,
+	 *Delete for headset detect.
+	 */
 	int pt_gnd_mic_swap_cnt = 0;
 	int no_gnd_mic_swap_cnt = 0;
+	#endif
 	bool is_pa_on = false, spl_hs = false, spl_hs_reported = false;
+	#ifndef CONFIG_PRODUCT_REALME_TRINKET
+	/*xiang.fei@PSW.MM.AudioDriver.HeadsetDet, 2017/03/03,
+	 *Delete for headset detect.
+	 */
 	int ret = 0;
+	#endif
 	int spl_hs_count = 0;
 	int output_mv = 0;
 	int cross_conn;
@@ -660,7 +684,12 @@ static void wcd_correct_swch_plug(struct work_struct *work)
 	 */
 	if ((plug_type == MBHC_PLUG_TYPE_HEADSET ||
 	     plug_type == MBHC_PLUG_TYPE_HEADPHONE) &&
+#ifndef CONFIG_PRODUCT_REALME_TRINKET
 	    (!wcd_swch_level_remove(mbhc))) {
+#else
+		(!wcd_swch_level_remove(mbhc)) && 
+		(output_mv != 0)) {
+#endif
 		WCD_MBHC_RSC_LOCK(mbhc);
 		wcd_mbhc_find_plug_and_report(mbhc, plug_type);
 		WCD_MBHC_RSC_UNLOCK(mbhc);
@@ -734,6 +763,10 @@ correct_plug_type:
 		if (mbhc->mbhc_cb->hph_pa_on_status)
 			is_pa_on = mbhc->mbhc_cb->hph_pa_on_status(mbhc->codec);
 
+		#ifndef CONFIG_PRODUCT_REALME_TRINKET
+		/*xiang.fei@PSW.MM.AudioDriver.HeadsetDet, 2017/03/03,
+		*Delete for headset detect.
+		*/
 		if ((output_mv <= hs_threshold) &&
 		    (!is_pa_on)) {
 			/* Check for cross connection*/
@@ -787,6 +820,7 @@ correct_plug_type:
 				}
 			}
 		}
+		#endif
 
 		if (output_mv > hs_threshold) {
 			pr_debug("%s: cable is extension cable\n", __func__);
