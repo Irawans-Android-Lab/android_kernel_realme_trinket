@@ -61,6 +61,11 @@ enum msm_sensor_camera_id_t {
 	CAMERA_1,
 	CAMERA_2,
 	CAMERA_3,
+#ifdef CONFIG_PRODUCT_REALME_TRINKET
+	CAMERA_4,
+	CAMERA_5,
+	CAMERA_6,
+#endif
 	MAX_CAMERAS,
 };
 
