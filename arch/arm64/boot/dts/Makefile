@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
+ifneq ($(CONFIG_PRODUCT_REALME_TRINKET),y) # Yunqing.Zeng@BSP.Kernel.Driver 2019/03/15 Modify for use oppo target dts for kernel
 dts-dirs += actions
 dts-dirs += al
 dts-dirs += allwinner
@@ -24,6 +25,11 @@ dts-dirs += sprd
 dts-dirs += xilinx
 dts-dirs += lg
 dts-dirs += zte
+else
+dts-dirs += 19631
+dts-dirs += 19632
+dts-dirs += 19633
+endif
 
 subdir-y	:= $(dts-dirs)
 
