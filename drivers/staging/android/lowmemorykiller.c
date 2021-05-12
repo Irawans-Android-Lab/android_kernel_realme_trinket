@@ -171,6 +171,7 @@ static int adjust_minadj(short *min_score_adj)
 			ret = VMPRESSURE_ADJUST_NORMAL;
 		*min_score_adj = adj_max_shift;
 	}
+
 	atomic_set(&shift_adj, 0);
 
 	return ret;
