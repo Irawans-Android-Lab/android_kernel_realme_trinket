@@ -3445,10 +3445,26 @@ EXPORT_SYMBOL_GPL(clk_debugfs_add_file);
  * Otherwise if print_parent set to 0, print only enabled clocks
  *
  */
+
+#ifdef CONFIG_PRODUCT_REALME_TRINKET
+//yangmingjin@BSP.POWER.Basic 2019/05/27 add for RM_TAG_POWER_DEBUG
+extern bool is_not_in_xo_mode(void);
+#endif /* CONFIG_PRODUCT_REALME_TRINKET */
+
 void clock_debug_print_enabled(bool print_parent)
 {
+
+#ifdef CONFIG_PRODUCT_REALME_TRINKET
+//yangmingjin@BSP.POWER.Basic 2019/05/27 add for RM_TAG_POWER_DEBUG
+    if (likely(!debug_suspend) && !is_not_in_xo_mode())
+        return;
+    if(is_not_in_xo_mode())
+        pr_err("[RM_POWER]: warning!!! system can not enter xo mode.\n");
+#else
 	if (likely(!debug_suspend))
 		return;
+
+#endif /* CONFIG_PRODUCT_REALME_TRINKET */
 
 	if (print_parent)
 		clock_debug_print_enabled_clocks(NULL);
