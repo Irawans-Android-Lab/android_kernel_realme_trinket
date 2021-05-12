@@ -1949,6 +1949,7 @@ static int ispif_open_node(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	int rc = 0;
 
 	mutex_lock(&ispif->mutex);
+	trace_printk("ispif_open_node ispif->ispif_state %d E\n", ispif->ispif_state);
 	if (ispif->open_cnt == 0) {
 		/* enable regulator and clocks on first open */
 		rc = msm_ispif_set_regulators(ispif->ispif_vdd,
